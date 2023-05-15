@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>音频音效处理系统</title>
+    <link rel="stylesheet" href="./static/lib/dsc.css">
+    <script src="./static/lib/vue.js"></script>
+    <script src="./static/lib/vue-resource.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style type="text/css">
+        body
+        {
+            margin: 0;
+            overflow: hidden;
+        }
+        ul
+        {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 17%;
+            background-color: #f1f1f1;
+            position: fixed;
+            height: 100%;
+            overflow: auto;
+        }
+
+        li a {
+            display: block;
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+        }
+
+        li a.active {
+            background-color: #3a3a8a;
+            color: white;
+        }
+
+        li a:hover:not(.active)
+        {
+            background-color: #555;
+            color: white;
+        }
+
+        table {
+            margin-top: 40px;
+            margin-left: 120px;
+        }
+
+    </style>
+    <script>
+        function currentPage(str)
+        {
+            const arr=['#basicTag','#reverbTag','#pitchTag','#gainTag','#mixTag','#deletePartTag','#addMuteTag','#fileMixTag'];
+            arr.forEach(function(item)
+            {
+                if(item!==str)
+                {
+                    const elem = document.querySelector(item);
+                    elem.style.backgroundColor="transparent";
+                    elem.style.color="black";
+                    const panElem=document.querySelector(item.slice(0,-3));
+                    panElem.style.display="none";
+                }
+                else
+                {
+                    const elem = document.querySelector(item);
+                    elem.style.backgroundColor="#6060EC";
+                    elem.style.color="white";
+                    console.log(item.slice(0,-3))
+                    const panElem=document.querySelector(item.slice(0,-3));
+                    panElem.style.display="inline";
+                }
+            })
+        }
+    </script>
+</head>
+<body style="background-color: rgb(222,222,222);">
+<div class="dsc-head-div" style="width:83%;left:17%;font-size:medium;padding: 8px 16px;">
+    <span id="mainWindowTitle" style="font-weight: bold;">音频参数与选项设置面板</span>
+</div>
+<ul>
+    <li><a class="active" href="#headTag" style="text-align: center">音频处理&nbsp;控制面板&nbsp;</a></li>
+    <li><a href="#basic" id="basicTag" onclick="currentPage('#basicTag')" style="background-color:#6060EC;color: white;"><i class="el-icon-setting"></i>&nbsp;输入与输出基础配置</a></li>
+    <li><a href="#reverb" id="reverbTag" onclick="currentPage('#reverbTag')"><i class="el-icon-setting"></i>&nbsp;混响音效</a></li>
+    <li><a href="#pitch" id="pitchTag" onclick="currentPage('#pitchTag')"><i class="el-icon-setting"></i>&nbsp;音调与速度调节</a></li>
+    <li><a href="#gain" id="gainTag" onclick="currentPage('#gainTag')"><i class="el-icon-setting"></i>&nbsp;增益与衰减</a></li>
+    <li><a href="#mix" id="mixTag" onclick="currentPage('#mixTag')"><i class="el-icon-setting"></i>&nbsp;声道重混缩</a></li>
+    <li><a href="#deletePart" id="deletePartTag" onclick="currentPage('#deletePartTag')"><i class="el-icon-setting"></i>&nbsp;删除片段</a></li>
+    <li><a href="#addMute" id="addMuteTag" onclick="currentPage('#addMuteTag')"><i class="el-icon-setting"></i>&nbsp;添加静音</a></li>
+    <li><a href="#fileMix" id="fileMixTag" onclick="currentPage('#fileMixTag')"><i class="el-icon-setting"></i>&nbsp;音频混合</a></li>
+</ul>
+<div style="margin-left:17%;">
+    <div id="MAIN-DIV">
+        <form action="/startProcess" method="post" enctype="multipart/form-data" target="myiframe">
+    <div style="position: absolute;left:24%;top:16%;width:76%;text-align:center;" id="basic">
+        <div class="dsc-static-div" style="width: 90%;text-align: left;background-color: rgb(140,140,140);">
+            <p style="margin-left: 12px;">
+                <span style="font-size: larger;">
+                    <i class="el-icon-info"></i>&nbsp;
+                    输入与输出基本配置
+                </span><br><br>
+                <i class="el-icon-caret-right"></i>采样率设置：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-outputHz" value="44100" name="outputHz">&nbsp;赫兹(Hz)&nbsp;&nbsp;
+                <el-tooltip class="item" effect="dark"
+                            content="采样率是指录音或处理音频时，每秒钟采集原始音频瞬间脉冲强度的次数，采样率越大，音频中储存的频域信号越多，但文件也随之增大。"
+                            placement="top-start">
+                    &nbsp;&nbsp;<span style="font-size: smaller;color: skyblue;cursor: pointer;">采样率是什么？</span>
+                </el-tooltip>
+                <br><br>
+                <i class="el-icon-caret-right"></i>位深度设置：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-outputBitRate" value="16" name="outputBitRate">&nbsp;比特(bits)&nbsp;&nbsp;
+
+                <el-tooltip class="item" effect="dark"
+                            content="位深度是指录音或处理音频时，存储每个脉冲样本需要的比特数，位深度越大，音质越细腻，但文件也随之增大。"
+                            placement="top-start">
+                    &nbsp;&nbsp;<span style="font-size: smaller;color: skyblue;cursor: pointer;">位深度是什么？</span>
+                </el-tooltip>
+                <br><br>
+                <i class="el-icon-caret-right"></i>&nbsp;&nbsp;<input type="checkbox" class="dsc-checkbox" name="filter">&nbsp;&nbsp;使用中值滤波处理
+                <el-tooltip class="item" effect="dark"
+                            content="中值滤波可以有效消除音频中的突变信号，但会略微损失音质。"
+                            placement="top-start">
+                    &nbsp;&nbsp;<span style="font-size: smaller;color: skyblue;cursor: pointer;">如何选择？</span>
+                </el-tooltip>
+                <br><br>
+                <i class="el-icon-caret-right"></i>&nbsp;&nbsp;选择一个您希望处理的音频文件：<br><br>
+                <input type="file" class="dsc-file" name="audioFile" id="file_audioFile">&nbsp;
+                文件ID：<input type="text" class="dsc-input" value="0" readonly name="fileID" id="inputBox-fileID">
+                <br><br>
+                <i class="el-icon-success"></i>&nbsp;&nbsp;选择文件以后，您可以调整页面左边的其他参数，最后，请您单击右面的按钮开始处理。
+                &nbsp;&nbsp;
+                <input type="submit" class="dsc-button" value="开始处理" @click="startProcess()">
+
+            </p>
+        </div>
+    </div>
+
+
+    <div style="position: absolute;left:24%;top:16%;width:76%;text-align:center;display: none;" id="reverb">
+        <div class="dsc-static-div" style="width: 90%;text-align: left;background-color: rgb(140,140,140);">
+            <p style="margin-left: 12px;">
+                <span style="font-size: larger;">
+                    <i class="el-icon-info"></i>&nbsp;
+                    混响音效参数设置
+                </span>
+                <br><br>
+                总体设置：&nbsp;&nbsp;
+                <input type="radio" value="no" class="dsc-radio" name="q-reverb" checked>不使用混响
+                <input type="radio" value="default" class="dsc-radio" name="q-reverb">默认混响
+                <input type="radio" value="setting" class="dsc-radio" name="q-reverb">使用下面的配置
+                <br><br>
+                <i class="el-icon-caret-right"></i>回声混响次数：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-reverbPcs" value="3" name="reverbPcs">&nbsp;次(Pcs)&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>最大相对响度：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-reverbMaxVolumeDb" value="2" name="reverbMaxVolumeDb">&nbsp;分贝(db)&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>回声偏移时长：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-reverbOffsetSecond" value="0.22" name="reverbOffsetSecond">&nbsp;秒(s)&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>最大声场强度：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-reverbSoundFieldVol" value="12.0" name="reverbSoundFieldVol">&nbsp;分贝(db)&nbsp;&nbsp;
+            </p>
+        </div>
+    </div>
+
+
+
+    <div style="position: absolute;left:24%;top:16%;width:76%;text-align:center;display: none;" id="pitch">
+        <div class="dsc-static-div" style="width: 90%;text-align: left;background-color: rgb(140,140,140);">
+            <p style="margin-left: 12px;">
+                <span style="font-size: larger;">
+                    <i class="el-icon-info"></i>&nbsp;
+                    音调与速度参数设置
+                </span>
+                <br><br>
+                总体设置：&nbsp;&nbsp;
+                <input type="radio" value="no" class="dsc-radio" name="q-pitch" checked>不使用调速调节
+                <input type="radio" value="default" class="dsc-radio" name="q-pitch">默认调节
+                <input type="radio" value="setting" class="dsc-radio" name="q-pitch">使用下面的配置
+                <br><br>
+                <i class="el-icon-caret-right"></i>音调因数：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-pitchPitchFactor" value="1.0" name="pitchPitchFactor">&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>速度因数：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-pitchSpeedFactor" value="1.0" name="pitchSpeedFactor">&nbsp;&nbsp;
+                <br><br>
+                <span style="font-weight: bold;color:darkred;">
+                    警告！强烈建议您将这两个参数的值设置为0.5~1.5之间，否则会出现严重的声音失真的情况。
+                </span>
+            </p>
+        </div>
+    </div>
+
+
+    <div style="position: absolute;left:24%;top:16%;width:76%;text-align:center;display: none;" id="gain">
+        <div class="dsc-static-div" style="width: 90%;text-align: left;background-color: rgb(140,140,140);">
+            <p style="margin-left: 12px;">
+                <span style="font-size: larger;">
+                    <i class="el-icon-info"></i>&nbsp;
+                    增益与衰减参数设置
+                </span>
+                <br><br>
+                总体设置：&nbsp;&nbsp;
+                <input type="radio" value="no" class="dsc-radio" name="q-gain" checked>不使用增益
+                <input type="radio" value="default" class="dsc-radio" name="q-gain">默认调节
+                <input type="radio" value="setting" class="dsc-radio" name="q-gain">使用下面的配置
+                <br><br>
+                <i class="el-icon-caret-right"></i>左声道增益相对响度：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-gainValueLeft" value="3.0" name="gainValueLeft">&nbsp;分贝(db)&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>右声道增益相对响度：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-gainValueRight" value="3.0" name="gainValueRight">&nbsp;分贝(db)&nbsp;&nbsp;
+                <br><br>
+                <span style="font-weight: bold;color:darkred;">
+                    警告！原始音频响度很大时，不要过度增益，否则会出现严重的声音失真的情况。
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div style="position: absolute;left:24%;top:16%;width:76%;text-align:center;display: none;" id="mix">
+        <div class="dsc-static-div" style="width: 90%;text-align: left;background-color: rgb(140,140,140);">
+            <p style="margin-left: 12px;">
+                <span style="font-size: larger;">
+                    <i class="el-icon-info"></i>&nbsp;
+                    声道重混缩参数设置
+                </span>
+                <br><br>
+                总体设置：&nbsp;&nbsp;
+                <input type="radio" value="no" class="dsc-radio" name="q-mix" checked>不使用重混缩
+                <input type="radio" value="default" class="dsc-radio" name="q-mix">消除人声方式
+                <input type="radio" value="setting" class="dsc-radio" name="q-mix">使用下面的配置
+                <br><br>
+                <i class="el-icon-caret-right"></i>新左声道-原左声道比例：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-mixLeft_leftRate" value="1.0" name="mixLeft_leftRate">&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>新左声道-原右声道比例：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-mixLeft_rightRate" value="-1.0" name="mixLeft_rightRate">&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>新右声道-原左声道比例：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-mixRight_leftRate" value="1.0" name="mixRight_leftRate">&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>新右声道-原右声道比例：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-mixRight_rightRate" value="-1.0" name="mixRight_rightRate">&nbsp;&nbsp;
+                <br><br>
+                <span style="font-weight: bold;color:darkred;">
+                    这四个参数的取值范围是-1.0~1.0，请注意您的配置。
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div style="position: absolute;left:24%;top:16%;width:76%;text-align:center;display: none;" id="deletePart">
+        <div class="dsc-static-div" style="width: 90%;text-align: left;background-color: rgb(140,140,140);">
+            <p style="margin-left: 12px;">
+                <span style="font-size: larger;">
+                    <i class="el-icon-info"></i>&nbsp;
+                    删除音频片段
+                </span>
+                <br><br>
+                总体设置：&nbsp;&nbsp;
+                <input type="radio" value="no" class="dsc-radio" name="q-trim" checked>不删除片段
+                <input type="radio" value="setting" class="dsc-radio" name="q-trim">使用下面的配置
+                <br><br>
+                <i class="el-icon-caret-right"></i>起始时刻：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-deletePartStart" value="1.0" name="deletePartStart">&nbsp;秒(s)&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>终止时刻：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-deletePartEnd" value="5.0" name="deletePartEnd">&nbsp;秒(s)&nbsp;&nbsp;
+            </p>
+        </div>
+    </div>
+
+    <div style="position: absolute;left:24%;top:16%;width:76%;text-align:center;display: none;" id="addMute">
+        <div class="dsc-static-div" style="width: 90%;text-align: left;background-color: rgb(140,140,140);">
+            <p style="margin-left: 12px;">
+                <span style="font-size: larger;">
+                    <i class="el-icon-info"></i>&nbsp;
+                    添加静音配置
+                </span>
+                <br><br>
+                总体设置：&nbsp;&nbsp;
+                <input type="radio" value="no" class="dsc-radio" name="q-addMute" checked>不添加静音
+                <input type="radio" value="insert" class="dsc-radio" name="q-addMute">插入模式
+                <input type="radio" value="override" class="dsc-radio" name="q-addMute">覆盖模式
+                <br><br>
+                <i class="el-icon-caret-right"></i>起始时刻：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-addMuteStart" value="1.0" name="addMuteStart">&nbsp;秒(s)&nbsp;&nbsp;
+                <br><br>
+                <i class="el-icon-caret-right"></i>静音时长：&nbsp;&nbsp;
+                <input class="dsc-input" id="inputBox-addMuteLength" value="5.0" name="addMuteLength">&nbsp;秒(s)&nbsp;&nbsp;
+            </p>
+        </div>
+    </div>
+    <div style="position: absolute;left:24%;top:16%;width:76%;text-align:center;display: none;" id="fileMix">
+
+    </div>
+
+    </form>
+    </div>
+    <iframe  width=0 height=0 frameborder=0 id="myiframe" name="myiframe"></iframe>
+    <script>
+        var vm=new Vue(
+            {
+                el:"#MAIN-DIV",
+                data:{},
+                methods:
+                    {
+                        startProcess:function ()
+                        {
+                            const loading = this.$loading(
+                                {
+                                    lock: true,
+                                    text: '请您稍候，我们正在加速处理您的音频',
+                                    spinner: 'el-icon-loading',
+                                    background: 'rgba(0, 0, 0, 0.7)'
+                                });
+                            var timer01=setInterval(() =>
+                            {
+                                var fID=document.getElementById("inputBox-fileID").value.toString();
+                                var fFullName=document.getElementById("file_audioFile").value;
+                                var shortName=fFullName.substring(fFullName.lastIndexOf('\\')+1,fFullName.length)
+                                var tailName=fFullName.substring(fFullName.lastIndexOf("."),fFullName.length)
+                                var outName=fID+"_"+shortName+"_output"+tailName;
+                                outName=outName.replaceAll(" ","_");
+                                vm.$http.get('/queryFile',{params:{fileName:outName}},{emulateJSON:true}).then((result)=>
+                                {
+                                    var datatemp=result.bodyText;
+                                    console.log(datatemp);
+                                    if(datatemp==="success")
+                                    {
+                                        loading.close();
+                                        window.location.href="/downloadFile?fileName="+outName;
+                                        this.$alert("音频处理完成，下载即将开始！", '音频处理系统提示',
+                                            {
+                                                confirmButtonText: '确定',
+                                            });
+                                        clearInterval(timer01);
+                                    }
+                                })
+                            }, 2000);
+                        }
+                    },
+                mounted:function ()
+                {
+                    document.getElementById("inputBox-fileID").value=new Date().valueOf();
+                }
+            })
+    </script>
+</div>
+</body>
+</html>
