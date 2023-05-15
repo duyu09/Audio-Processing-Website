@@ -6,6 +6,16 @@
 - - 后端基于Python Flask框架编写。
 - - 前端由静态HTML5+ElementUI编写，项目前端目前采用CSR架构。
 
+## 更新日志
+
+### Update on December 24th, 2022
+
+初步完成了前端代码和后端代码的编写。
+
+### Update on May 16th, 2023
+
+简单优化了UI和后端逻辑，前端通过轮询的方式判断音频在后端的处理情况，是为创新点。后端对文件名的处理以及高并发仍然有问题，留给后续版本修复。
+
 ### 著作权声明
 
 &copy; 2020~2023 Duyu09, Faculty of Computer Science and Technology, Qilu University of Technology.
