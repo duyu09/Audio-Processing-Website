@@ -10,7 +10,7 @@
 
 ### Update on December 24th, 2022
 
-初步完成了前端代码和后端代码的编写，为v1.0版本。运行前，请解压/v1.0/static/lib/libs.zip里的库文件到当前目录(即：/v1.0/static/lib)
+初步完成了前端代码和后端代码的编写，为v1.0版本。运行前，请解压/v1.0/static/lib/libs.zip里的库文件到当前目录(即：/v1.0/static/lib)，该仓库中不包含DAPC，请将DAPC可执行文件放置于项目根目录下，再启动后端。
 
 ### Update on May 16th, 2023
 
