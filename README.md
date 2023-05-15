@@ -10,7 +10,7 @@
 
 ### Update on December 24th, 2022
 
-初步完成了前端代码和后端代码的编写。
+初步完成了前端代码和后端代码的编写，为v1.0版本。运行前，请解压/v1.0/static/lib/libs.zip里的库文件到当前目录(即：/v1.0/static/lib)
 
 ### Update on May 16th, 2023
 
